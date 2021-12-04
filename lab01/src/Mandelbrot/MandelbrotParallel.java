@@ -1,4 +1,4 @@
-package lab1;
+package Mandelbrot;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
