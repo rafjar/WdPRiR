@@ -104,7 +104,7 @@ public class MandelbrotPool {
     }
 
     public void saveImage(BufferedImage image) throws IOException {
-        File outputFile = new File("kleks_workers_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".png");
+        File outputFile = new File("kleks_pool_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".png");
         ImageIO.write(image, "png", outputFile);
     }
 
