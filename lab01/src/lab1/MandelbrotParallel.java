@@ -70,7 +70,9 @@ public class MandelbrotParallel {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY, new IndexColorModel(1, 2, bw, bw, bw));
 
         for(int i=0; i<cores; ++i) {
-            mandelbrotWorkers[i] = new MandelbrotWorker(width, height, i * height / cores, (i + 1) * height / cores, xmin, xmax, ymin, ymax, N, image);
+            int heightMin = i * height / cores;
+            int heightMax = (i + 1) * height / cores;
+            mandelbrotWorkers[i] = new MandelbrotWorker(width, height, heightMin, heightMax, xmin, xmax, ymin, ymax, N, image);
             threadWorkers[i] = new Thread(mandelbrotWorkers[i]);
             threadWorkers[i].start();
         }
