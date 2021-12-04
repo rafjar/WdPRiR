@@ -11,27 +11,28 @@ import java.util.concurrent.TimeUnit;
 
 public class MandelbrotParallel {
 
-    public class Parallel implements Runnable {
-        int width, height, N;
+    public static class MandelbrotWorker implements Runnable {
+        int width, height, heightMin, heightMax, N;
         double xmin, xmax, ymin, ymax;
         BufferedImage image;
 
-        public Parallel(int width, int height, double xmin, double xmax, double ymin, double ymax, int N) {
+        public MandelbrotWorker(int width, int height, int heightMin, int heightMax, double xmin, double xmax, double ymin, double ymax, int N, BufferedImage image) {
             this.width = width;
             this.height = height;
+            this.heightMin = heightMin;
+            this.heightMax = heightMax;
             this.xmin = xmin;
             this.xmax = xmax;
             this.ymin = ymin;
             this.ymax = ymax;
             this.N = N;
+            this.image = image;
         }
 
         @Override
         public void run() {
-            byte[] bw = {(byte) 0xff, (byte) 0};
-            image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY, new IndexColorModel(1, 2, bw, bw, bw));
 
-            for(int y=0; y<height; ++y) {
+            for(int y=heightMin; y<heightMax; ++y) {
                 for(int x=0; x<width; ++x) {
                     double xval = xmin + x*((xmax - xmin) / (width - 1));
                     double yval = ymin + y*((ymax - ymin) / (height - 1));
@@ -43,42 +44,38 @@ public class MandelbrotParallel {
             }
         }
 
-        public BufferedImage getImage() {
-            return image;
+        public boolean checkPoint(int iterations, double xval, double yval) {
+            double x = 0, y = 0;
+
+            for(int i=0; i<iterations; ++i) {
+                double oldX = x, oldY = y;
+                x = oldX*oldX - oldY*oldY + xval;
+                y = 2*oldX*oldY + yval;
+
+                if(Math.sqrt(x*x + y*y) >= 2)
+                    return false;
+            }
+
+            return true;
         }
     }
 
-    public static boolean checkPoint(int iterations, double xval, double yval) {
-        double x = 0, y = 0;
-
-        for(int i=0; i<iterations; ++i) {
-            double oldX = x, oldY = y;
-            x = oldX*oldX - oldY*oldY + xval;
-            y = 2*oldX*oldY + yval;
-
-            if(Math.sqrt(x*x + y*y) >= 2)
-                return false;
-        }
-
-        return true;
-    }
 
     public BufferedImage generateMandelbrot(int width, int height, double xmin, double xmax, double ymin, double ymax, int N) {
         int cores = Runtime.getRuntime().availableProcessors();
-        Thread[] workers = new Thread[cores];
-        Parallel[] parallels = new Parallel[cores];
+        Thread[] threadWorkers = new Thread[cores];
+        MandelbrotWorker[] mandelbrotWorkers = new MandelbrotWorker[cores];
 
         byte[] bw = {(byte) 0xff, (byte) 0};
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY, new IndexColorModel(1, 2, bw, bw, bw));
 
-        double ySize = (ymax-ymin) / cores;
         for(int i=0; i<cores; ++i) {
-            parallels[i] = new Parallel(width, height/4, xmin, xmax, ymin+i*ySize, ymin+(i+1)*ySize, N);
-            workers[i] = new Thread(parallels[i]);
-            workers[i].start();
+            mandelbrotWorkers[i] = new MandelbrotWorker(width, height, i * height / cores, (i + 1) * height / cores, xmin, xmax, ymin, ymax, N, image);
+            threadWorkers[i] = new Thread(mandelbrotWorkers[i]);
+            threadWorkers[i].start();
         }
 
-        for(var worker : workers) {
+        for(var worker : threadWorkers) {
             try {
                 worker.join();
                 System.out.println("Worker finished");
@@ -86,12 +83,6 @@ public class MandelbrotParallel {
                 e.printStackTrace();
             }
         }
-
-        Graphics g = image.getGraphics();
-        for(int i=0; i<cores; ++i) {
-            g.drawImage(parallels[i].getImage(), 0, i*(height / 4), null);
-        }
-
 
         return image;
     }
@@ -122,17 +113,16 @@ public class MandelbrotParallel {
         return getExecutionTime(iterations, width, height, TimeUnit.NANOSECONDS);
     }
 
-    public static void saveImage(BufferedImage image) throws IOException {
-        File outputFile = new File("kleks_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".png");
+    public void saveImage(BufferedImage image) throws IOException {
+        File outputFile = new File("kleks_workers_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".png");
         ImageIO.write(image, "png", outputFile);
     }
 
     public static void main(String[] args) throws IOException {
-        int size = 8000;
+        int size = 20000;
         MandelbrotParallel mandelbrot = new MandelbrotParallel();
-//        mandelbrot.saveImage(mandelbrot.generateMandelbrot(size, size));
         System.out.println("Czas wykoniania " + mandelbrot.getExecutionTime(1, size, size) + "ns");
-//        mandelbrot.generateMandelbrot(size, size);
+        mandelbrot.saveImage(mandelbrot.generateMandelbrot(size, size));
 
 //        PrintWriter outputFile = new PrintWriter("pomiary_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".csv");
 //        for(int size = 32; size <= 8192; size *= 2) {

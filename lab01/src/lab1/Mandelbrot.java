@@ -74,7 +74,7 @@ public class Mandelbrot {
     }
 
     public static void saveImage(BufferedImage image) throws IOException {
-        File outputFile = new File("kleks_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".png");
+        File outputFile = new File("kleks_single_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".png");
         ImageIO.write(image, "png", outputFile);
     }
 
