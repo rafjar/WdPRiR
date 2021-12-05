@@ -25,11 +25,12 @@ public class ParallelImageDownloader {
                 System.out.println("Filter " + (i+1) + " of " + nFilters);
             }
             ImageIO.write(image, "png", new File("download/" + filename));
-            System.out.println("Image saved");
         }
 
         else
             ImageIO.write(ImageIO.read(imageURL), "png", new File("download/" + filename));
+
+        System.out.println("Image saved");
     }
 
     public static void downloadImagesFromSite(String website, boolean filterImage, double sigma, int kernelRadius, int nFilters) throws IOException, InterruptedException {
@@ -118,6 +119,6 @@ public class ParallelImageDownloader {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        downloadImagesFromSite("http://www.if.pw.edu.pl/~mrow/dyd/wdprir/", true, 1, 1, 1);
+        downloadImagesFromSite("http://www.if.pw.edu.pl/~mrow/dyd/wdprir/", true, 5, 5, 3);
     }
 }
