@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 
@@ -80,7 +81,7 @@ public class MandelbrotParallel {
         for(var worker : threadWorkers) {
             try {
                 worker.join();
-                System.out.println("Worker finished");
+//                System.out.println("Worker finished");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -121,19 +122,19 @@ public class MandelbrotParallel {
     }
 
     public static void main(String[] args) throws IOException {
-        int size = 20000;
+//        int size = 20000;
         MandelbrotParallel mandelbrot = new MandelbrotParallel();
-        System.out.println("Czas wykoniania " + mandelbrot.getExecutionTime(1, size, size) + "ns");
-        mandelbrot.saveImage(mandelbrot.generateMandelbrot(size, size));
+//        System.out.println("Czas wykoniania " + mandelbrot.getExecutionTime(1, size, size) + "ns");
+//        mandelbrot.saveImage(mandelbrot.generateMandelbrot(size, size));
 
-//        PrintWriter outputFile = new PrintWriter("pomiary_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".csv");
-//        for(int size = 32; size <= 8192; size *= 2) {
-//            System.out.println("Size " + size + " started...");
-//            outputFile.println(size + ", " + getExecutionTime(200, size, size, TimeUnit.MICROSECONDS));
-//            outputFile.flush();
-//            System.out.println("Size " + size + " finished...");
-//        }
-//        outputFile.close();
+        PrintWriter outputFile = new PrintWriter("Mandelbrot_parallel.csv");
+        for(int size = 32; size <= 8192; size *= 2) {
+            System.out.println("Size " + size + " started...");
+            outputFile.println(size + ", " + mandelbrot.getExecutionTime(20, size, size, TimeUnit.MICROSECONDS));
+            outputFile.flush();
+            System.out.println("Size " + size + " finished...");
+        }
+        outputFile.close();
     }
 
 }

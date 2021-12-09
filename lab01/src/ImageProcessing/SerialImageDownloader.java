@@ -105,5 +105,14 @@ public class SerialImageDownloader {
 
     public static void main(String[] args) throws IOException {
         downloadImagesFromSite("http://www.if.pw.edu.pl/~mrow/dyd/wdprir/", true, 1, 1, 1);
+
+//        PrintWriter outputFile = new PrintWriter("pomiary_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".csv");
+//        for(int size = 32; size <= 8192; size *= 2) {
+//            System.out.println("Size " + size + " started...");
+//            outputFile.println(size + ", " + getExecutionTime(200, size, size, TimeUnit.MICROSECONDS));
+//            outputFile.flush();
+//            System.out.println("Size " + size + " finished...");
+//        }
+//        outputFile.close();
     }
 }

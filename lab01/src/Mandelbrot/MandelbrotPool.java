@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.*;
 
@@ -109,20 +110,22 @@ public class MandelbrotPool {
     }
 
     public static void main(String[] args) throws IOException {
-        int size = 8000;
-        int chunkSize = 100;
+//        int size = 8000;
+//        int chunkSize = 100;
         MandelbrotPool mandelbrot = new MandelbrotPool();
-        System.out.println("Czas wykoniania " + mandelbrot.getExecutionTime(1, size, chunkSize, size, chunkSize) + "ns");
-        mandelbrot.saveImage(mandelbrot.generateMandelbrot(size, chunkSize, size, chunkSize));
+//        System.out.println("Czas wykoniania " + mandelbrot.getExecutionTime(1, size, chunkSize, size, chunkSize) + "ns");
+//        mandelbrot.saveImage(mandelbrot.generateMandelbrot(size, chunkSize, size, chunkSize));
 
-//        PrintWriter outputFile = new PrintWriter("pomiary_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".csv");
-//        for(int size = 32; size <= 8192; size *= 2) {
-//            System.out.println("Size " + size + " started...");
-//            outputFile.println(size + ", " + getExecutionTime(200, size, size, TimeUnit.MICROSECONDS));
-//            outputFile.flush();
-//            System.out.println("Size " + size + " finished...");
-//        }
-//        outputFile.close();
+        for(int chunk_size=4; chunk_size<=128; chunk_size*=2) {
+            PrintWriter outputFile = new PrintWriter("Mandelbrot_pool_" + chunk_size + ".csv");
+            for(int size = 32; size <= 8192; size *= 2) {
+                System.out.println("Size " + size + " started...");
+                outputFile.println(size + ", " + mandelbrot.getExecutionTime(20, size, chunk_size, size, chunk_size, TimeUnit.MICROSECONDS));
+                outputFile.flush();
+                System.out.println("Size " + size + " finished...");
+            }
+            outputFile.close();
+        }
     }
 
 }

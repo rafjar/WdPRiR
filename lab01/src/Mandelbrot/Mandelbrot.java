@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.TimeUnit;
 
@@ -77,17 +78,17 @@ public class Mandelbrot {
     }
 
     public static void main(String[] args) throws IOException {
-        int size = 8000;
-        saveImage(generateMandelbrot(size, size));
+//        int size = 8000;
+//        saveImage(generateMandelbrot(size, size));
 
-//        PrintWriter outputFile = new PrintWriter("pomiary_" + new SimpleDateFormat("dd_MM_yyyy_HH_mm").format(new java.util.Date()) + ".csv");
-//        for(int size = 32; size <= 8192; size *= 2) {
-//            System.out.println("Size " + size + " started...");
-//            outputFile.println(size + ", " + getExecutionTime(200, size, size, TimeUnit.MICROSECONDS));
-//            outputFile.flush();
-//            System.out.println("Size " + size + " finished...");
-//        }
-//        outputFile.close();
+        PrintWriter outputFile = new PrintWriter("Mandelbrot_serial.csv");
+        for(int size = 32; size <= 8192; size *= 2) {
+            System.out.println("Size " + size + " started...");
+            outputFile.println(size + ", " + getExecutionTime(20, size, size, TimeUnit.MICROSECONDS));
+            outputFile.flush();
+            System.out.println("Size " + size + " finished...");
+        }
+        outputFile.close();
     }
 
 }
