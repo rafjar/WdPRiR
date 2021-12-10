@@ -119,6 +119,10 @@ public class ParallelImageDownloader {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        long start = System.nanoTime();
         downloadImagesFromSite("http://www.if.pw.edu.pl/~mrow/dyd/wdprir/", true, 5, 5, 3);
+        long end = System.nanoTime();
+
+        System.out.println("Execution time: " + (end-start));
     }
 }
